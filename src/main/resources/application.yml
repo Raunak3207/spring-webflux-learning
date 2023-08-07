@@ -1,0 +1,14 @@
+
+spring:
+  profiles:
+    active: local
+  data:
+    mongodb:
+      database: wellnessappdb
+      host: localhost
+      port: 27017
+server:
+  port: 8080
+
+
+
