@@ -9,6 +9,33 @@ spring:
       port: 27017
 server:
   port: 8080
+resilience4j:
+  circuitbreaker:
+    instances:
+      mockService:
+        slidingWindowSize: 10
+        slidingWindowType: COUNT_BASED
+        #waitDurationInOpenState: 5
+        failureRateThreshold: 50
+        permittedNumberOfCallsInHalfOpenState: 5
+        registerHealthIndicator: true
+        #register-health-indicator: true
+        allowHealthIndicatorToFail: true
+    configs:
+      default:
+        registerHealthIndicator: true
+
+management.health.circuitbreakers.enabled: true
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+
 
 
 

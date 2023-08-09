@@ -6,6 +6,7 @@ import com.reactive.wellnesswidgetservice.dto.WellNessDataResponse;
 import com.reactive.wellnesswidgetservice.dto.WellnessDataRequest;
 import com.reactive.wellnesswidgetservice.exceptions.UserNotFoundException;
 import com.reactive.wellnesswidgetservice.repository.UserRepository;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -25,6 +26,7 @@ public class WeatherAndSiknessService {
         this.apiCallService = apiCallService;
     }
 
+    @CircuitBreaker(name="mockService",fallbackMethod = "fallback")
     public Mono<WellNessDataResponse> getWellnessData(WellnessDataRequest dataRequest) {
     return userRepository.findByUserName(dataRequest.getUserName()).flatMap(user -> {
         String country  = Optional.ofNullable(dataRequest.getCountry()).orElse(user.getCountry());
@@ -40,5 +42,10 @@ public class WeatherAndSiknessService {
             return wellNessDataResponse;
         });
     }).switchIfEmpty(Mono.error(new UserNotFoundException("User doesn't exists")));
+    }
+
+    public Mono<Void> fallback(Throwable ex) {
+        log.info("fallback method executed");
+        return Mono.error(new RuntimeException("Something went Wrong"+ex.getMessage()));
     }
 }
