@@ -35,6 +35,11 @@ public class WebApiCallService {
                 .uri(requestUrl)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError,clientResponse -> {
+                    if(clientResponse.statusCode() == HttpStatus.NOT_FOUND)
+                        return   Mono.error(new ResourceNotFoundException("error with provided lat and long"));
+                    return  Mono.error(new ResourceNotFoundException("resource not found"));
+                }).onStatus(HttpStatusCode::is5xxServerError,clientResponse -> Mono.error(new RuntimeException("Something went Wrong")))
                 .bodyToMono(WeatherApiResponse.class).log();
     }
 
@@ -50,7 +55,7 @@ public class WebApiCallService {
                     if(clientResponse.statusCode() == HttpStatus.NOT_FOUND)
                       return   Mono.error(new ResourceNotFoundException("Provided country invalid"));
                   return  Mono.error(new ResourceNotFoundException("Provided country invalid"));
-                })
+                }).onStatus(HttpStatusCode::is5xxServerError,clientResponse -> Mono.error(new RuntimeException("Something went Wrong")))
                 .bodyToMono(CovidData.class)
                 .log();
 

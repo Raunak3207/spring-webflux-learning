@@ -4,10 +4,7 @@ import com.reactive.wellnesswidgetservice.dto.WellNessDataResponse;
 import com.reactive.wellnesswidgetservice.dto.WellnessDataRequest;
 import com.reactive.wellnesswidgetservice.service.WeatherAndSiknessService;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -20,7 +17,7 @@ public class WeatherAndSiknessDataController {
         this.weatherAndSiknessService = weatherAndSiknessService;
     }
 
-    @GetMapping("/wellnessData")
+    @PostMapping("/wellnessData")
     Mono<WellNessDataResponse> getWellnessData(@Valid  @RequestBody WellnessDataRequest dataRequest){
         return weatherAndSiknessService.getWellnessData(dataRequest);
     }
